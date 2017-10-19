@@ -1,4 +1,5 @@
 *~
+_build
 gnome-screenshot
 org.gnome.Screenshot.desktop
 org.gnome.Screenshot.service
