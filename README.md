@@ -7,6 +7,8 @@ GNOME 重阴影截图
 
 ### 安装
 - Arch Linux: `yaourt -S gnome-screenshot-heavy-shadow`，替换 `gnome-screenshot`
+- 源码安装：`./configure && make && make install`
+ 构建依赖：appstream-glib, meson, ninja, python
 
 ### 依赖
 - GLib 2.36
@@ -23,6 +25,8 @@ desktop; the currently focused window; or an area of the screen.
 
 ### Installation
 - Arch Linux: `yaourt -S gnome-screenshot-heavy-shadow`, replace the original `gnome-screenshot`
+- From source: `./configure && make && make install`
+ dependencies: appstream-glib, meson, ninja, python
 
 ### Dependencies
 
