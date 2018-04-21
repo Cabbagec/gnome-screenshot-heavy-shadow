@@ -88,6 +88,13 @@ delay_spin_value_changed_cb (GtkSpinButton *button)
 }
 
 static void
+background_transparent_cb(GtkToggleButton *button, 
+                          gpointer        data)
+{
+  screenshot_config->transparent = gtk_toggle_button_get_active(button);
+}
+
+static void
 include_border_toggled_cb (GtkToggleButton *button,
                            gpointer         data)
 {
@@ -259,6 +266,26 @@ create_effects_frame (GtkWidget   *outer_vbox,
   gtk_box_pack_start (GTK_BOX (hbox), vbox, FALSE, FALSE, 0);
   gtk_widget_set_margin_start (vbox, 12);
   gtk_widget_show (vbox);
+
+
+  /* Transparent vs Opaque */
+  /* If transparent is enabled, screenshot will be saved
+   * in RGBA structure, and be in transparent background PNG 
+   * when saved as file.
+   * 
+   * Else, it will be converted to RGB structure, 
+   * and be in white background JPG when saved as file.
+   */
+  check = gtk_check_button_new_with_mnemonic(_("Background _transparent"));
+  gtk_widget_set_sensitive(check, 
+                           screenshot_config->take_window_shot);
+  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON (check),
+                               screenshot_config->transparent);
+  g_signal_connect(check, "toggled",
+                   G_CALLBACK(background_transparent_cb),
+                   NULL);
+  gtk_box_pack_start(GTK_BOX(vbox), check, FALSE, FALSE, 0);
+  gtk_widget_show(check);
 
   /** Include pointer **/
   check = gtk_check_button_new_with_mnemonic (_("Include _pointer"));

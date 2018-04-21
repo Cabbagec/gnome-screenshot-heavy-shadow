@@ -43,6 +43,8 @@ typedef struct {
   gboolean include_border;
   gchar *border_effect;
 
+  gboolean transparent;
+
   guint delay;
 
   gboolean interactive;
