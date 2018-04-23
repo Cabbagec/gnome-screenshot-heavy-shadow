@@ -30,6 +30,7 @@
 #define DELAY_KEY               "delay"
 #define INCLUDE_BORDER_KEY      "include-border"
 #define INCLUDE_POINTER_KEY     "include-pointer"
+#define BACKGROUND_TRANSPARENT_KEY "background-transparent"
 #define INCLUDE_ICC_PROFILE     "include-icc-profile"
 #define AUTO_SAVE_DIRECTORY_KEY "auto-save-directory"
 #define LAST_SAVE_DIRECTORY_KEY "last-save-directory"
@@ -57,6 +58,9 @@ screenshot_load_config (void)
   config->include_pointer =
     g_settings_get_boolean (config->settings,
                             INCLUDE_POINTER_KEY);
+  config->transparent = 
+    g_settings_get_boolean (config->settings,
+                            BACKGROUND_TRANSPARENT_KEY);
   config->border_effect =
     g_settings_get_string (config->settings,
                            BORDER_EFFECT_KEY);
@@ -93,6 +97,8 @@ screenshot_save_config (void)
                           INCLUDE_BORDER_KEY, c->include_border);
   g_settings_set_boolean (c->settings,
                           INCLUDE_POINTER_KEY, c->include_pointer);
+  g_settings_set_boolean(c->settings, 
+                         BACKGROUND_TRANSPARENT_KEY, c->transparent);
   g_settings_set_string (c->settings,
                          BORDER_EFFECT_KEY, c->border_effect);
 
@@ -107,6 +113,7 @@ screenshot_config_parse_command_line (gboolean clipboard_arg,
                                       gboolean include_border_arg,
                                       gboolean disable_border_arg,
                                       gboolean include_pointer_arg,
+                                      gboolean background_transparent_arg,
                                       const gchar *border_effect_arg,
                                       guint delay_arg,
                                       gboolean interactive_arg,
@@ -136,6 +143,8 @@ screenshot_config_parse_command_line (gboolean clipboard_arg,
         g_warning ("Option --include-pointer is ignored in interactive mode.");
       if (file_arg)
         g_warning ("Option --file is ignored in interactive mode.");
+      if (background_transparent_arg)
+        g_warning ("Option --background-transparent is ignored in interactive mode.");
 
       if (delay_arg > 0)
         screenshot_config->delay = delay_arg;
@@ -156,6 +165,7 @@ screenshot_config_parse_command_line (gboolean clipboard_arg,
       screenshot_config->include_border = !disable_border_arg;
       screenshot_config->include_pointer = include_pointer_arg;
       screenshot_config->copy_to_clipboard = clipboard_arg;
+      screenshot_config->transparent = background_transparent_arg;
       if (file_arg != NULL)
         screenshot_config->file = g_file_new_for_commandline_arg (file_arg);
     }
@@ -168,6 +178,10 @@ screenshot_config_parse_command_line (gboolean clipboard_arg,
 
   screenshot_config->take_window_shot = window_arg;
   screenshot_config->take_area_shot = area_arg;
+
+  /* Dirty hack here, change file type to .jpg when taking non transparent window shot*/
+  if(window_arg && !background_transparent_arg)
+    screenshot_config->file_type = "jpg";
 
   return TRUE;
 }

@@ -32,6 +32,7 @@
 #define SCREENSHOOTER_ICON "applets-screenshooter"
 
 static GtkWidget *border_check = NULL;
+static GtkWidget *transparent_check = NULL;
 static GtkWidget *effect_combo = NULL;
 static GtkWidget *effect_label = NULL;
 static GtkWidget *effects_vbox = NULL;
@@ -69,6 +70,7 @@ target_toggled_cb (GtkToggleButton *button,
       take_window_shot = (target_toggle == TARGET_TOGGLE_WINDOW);
       take_area_shot = (target_toggle == TARGET_TOGGLE_AREA);
       
+      gtk_widget_set_sensitive (transparent_check, take_window_shot);
       gtk_widget_set_sensitive (border_check, take_window_shot);
       gtk_widget_set_sensitive (effect_combo, take_window_shot);
       gtk_widget_set_sensitive (effect_label, take_window_shot);
@@ -286,6 +288,7 @@ create_effects_frame (GtkWidget   *outer_vbox,
                    NULL);
   gtk_box_pack_start(GTK_BOX(vbox), check, FALSE, FALSE, 0);
   gtk_widget_show(check);
+  transparent_check = check;
 
   /** Include pointer **/
   check = gtk_check_button_new_with_mnemonic (_("Include _pointer"));

@@ -13,6 +13,7 @@ sources = [
   'screenshot-interactive-dialog.c',
   'screenshot-shadow.c',
   'screenshot-utils.c',
+  'screenshot-RGBA2RGB.c'
 ]
 
 resources = gnome.compile_resources('screenshot-resources',
@@ -27,6 +28,7 @@ executable('gnome-screenshot', sources + resources,
              '-DLOCALEDIR="@0@"'.format(gnome_screenshot_localedir),
              '-DGLIB_DISABLE_DEPRECATION_WARNINGS',
              '-DGDK_DISABLE_DEPRECATION_WARNINGS',
+             '-Ofast'
            ],
            install: true)
 

@@ -29,12 +29,14 @@
 
 enum {
   TYPE_IMAGE_PNG,
+  TYPE_IMAGE_JPG,
   LAST_TYPE
 };
 
 static GtkTargetEntry drag_types[] =
 {
   { "image/png", 0, TYPE_IMAGE_PNG },
+  { "image/jpg", 0, TYPE_IMAGE_JPG }
 };
 
 static void
@@ -103,7 +105,7 @@ drag_data_get (GtkWidget          *widget,
 	       guint               time,
 	       ScreenshotDialog   *dialog)
 {
-  if (info == TYPE_IMAGE_PNG)
+  if (info == TYPE_IMAGE_PNG || info == TYPE_IMAGE_JPG)
     gtk_selection_data_set_pixbuf (selection_data, dialog->screenshot);
   else
     g_warning ("Unknown type %d", info);
@@ -316,7 +318,10 @@ screenshot_dialog_get_filename (ScreenshotDialog *dialog)
                  file_name,
                  error->message);
       g_error_free (error);
-      tmp = g_strdup (_("Screenshot.png"));
+      if(screenshot_config->take_window_shot && !(screenshot_config->transparent))
+        tmp = g_strdup (_("Screenshot.jpg"));
+      else
+        tmp = g_strdup (_("Screenshot.png"));
     }
 
   return tmp;

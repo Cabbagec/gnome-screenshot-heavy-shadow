@@ -19,7 +19,6 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301
  * USA
  */
-
 #include "config.h"
 
 #include <gdk/gdkx.h>
@@ -39,6 +38,7 @@
 #include "screenshot-shadow.h"
 #include "screenshot-utils.h"
 #include "screenshot-dialog.h"
+#include "screenshot-RGBA2RGB.h"
 
 #define SCREENSHOOTER_ICON "applets-screenshooter"
 
@@ -313,7 +313,9 @@ save_file_create_ready_cb (GObject *source,
   gchar *format = NULL;
   GSList *formats = NULL;
 
-  if (extension == NULL)
+  if(screenshot_config->take_window_shot && !(screenshot_config->transparent))
+    extension = "jpg";
+  else if (extension == NULL)
     extension = "png";
   else
     extension++;
@@ -537,6 +539,10 @@ finish_prepare_screenshot (ScreenshotApplication *self,
           break;
         }
     }
+  
+  if(screenshot_config->take_window_shot &&
+     !(screenshot_config->transparent)) 
+      screenshot_RGBA2RGB(&screenshot);
 
   self->priv->screenshot = screenshot;
 
@@ -640,6 +646,7 @@ static const GOptionEntry entries[] = {
   { "delay", 'd', 0, G_OPTION_ARG_INT, NULL, N_("Take screenshot after specified delay [in seconds]"), N_("seconds") },
   { "border-effect", 'e', 0, G_OPTION_ARG_STRING, NULL, N_("Effect to add to the border (shadow, border, vintage or none)"), N_("effect") },
   { "interactive", 'i', 0, G_OPTION_ARG_NONE, NULL, N_("Interactively set options"), NULL },
+  { "background-transparent", 't', 0, G_OPTION_ARG_NONE, NULL, N_("Use transparent background or white background when capturing window."), NULL},
   { "file", 'f', 0, G_OPTION_ARG_FILENAME, NULL, N_("Save screenshot directly to this file"), N_("filename") },
   { "version", 0, 0, G_OPTION_ARG_NONE, &version_arg, N_("Print version information and exit"), NULL },
   { NULL },
@@ -681,6 +688,7 @@ screenshot_application_command_line (GApplication            *app,
   gboolean include_border_arg = FALSE;
   gboolean disable_border_arg = FALSE;
   gboolean include_pointer_arg = FALSE;
+  gboolean background_transparent_arg = FALSE;
   gboolean interactive_arg = FALSE;
   gchar *border_effect_arg = NULL;
   guint delay_arg = 0;
@@ -696,6 +704,7 @@ screenshot_application_command_line (GApplication            *app,
   g_variant_dict_lookup (options, "include-border", "b", &include_border_arg);
   g_variant_dict_lookup (options, "remove-border", "b", &disable_border_arg);
   g_variant_dict_lookup (options, "include-pointer", "b", &include_pointer_arg);
+  g_variant_dict_lookup (options, "background-transparent", "b", &background_transparent_arg);
   g_variant_dict_lookup (options, "interactive", "b", &interactive_arg);
   g_variant_dict_lookup (options, "border-effect", "&s", &border_effect_arg);
   g_variant_dict_lookup (options, "delay", "i", &delay_arg);
@@ -707,6 +716,7 @@ screenshot_application_command_line (GApplication            *app,
                                               include_border_arg,
                                               disable_border_arg,
                                               include_pointer_arg,
+                                              background_transparent_arg,
                                               border_effect_arg,
                                               delay_arg,
                                               interactive_arg,
@@ -789,6 +799,7 @@ action_screen_shot (GSimpleAction *action,
                                         FALSE, /* include border */
                                         FALSE, /* disable border */
                                         FALSE, /* include pointer */
+                                        TRUE,  /* background transparent */
                                         NULL,  /* border effect */
                                         0,     /* delay */
                                         FALSE, /* interactive */
@@ -809,6 +820,7 @@ action_window_shot (GSimpleAction *action,
                                         FALSE, /* include border */
                                         FALSE, /* disable border */
                                         FALSE, /* include pointer */
+                                        TRUE,  /* background transparent */
                                         NULL,  /* border effect */
                                         0,     /* delay */
                                         FALSE, /* interactive */

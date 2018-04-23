@@ -36,6 +36,11 @@
       <summary>Include Pointer</summary>
       <description>Include the pointer in the screenshot</description>
     </key>
+    <key name="background-transparent" type="b">
+      <default>true</default>
+      <summary>Background transparent</summary>
+      <description>Grab image in transparent or white background</description>
+    </key>
     <key name="include-icc-profile" type="b">
       <default>true</default>
       <summary>Include ICC Profile</summary>
